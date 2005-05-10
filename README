@@ -1,0 +1,81 @@
+NAME
+    Device::MX240 - Perl api to the MX240 (Motorola Instant Messenger)
+
+SYNOPSIS
+            use Device::MX240 qw(open_dev);
+
+            my $done = 0;
+
+            # Ctrl-C/INT handler
+            $SIG{INT} = sub { $SIG{INT} = 'IGNORE'; $done++; };
+
+            my $d = open_dev();
+
+            # init device
+            $d->write_dev("\xad\xef\x8d");
+
+            while (!$done) {
+                    my $buf = $d->read_dev();
+                    if ($buf) {
+                            # process $buf
+                            # and use $d->write_dev();
+                    }
+                    sleep(1);
+                    # poll the device
+                    $d->write_dev("\xad");
+            }
+
+            $d->close_dev;
+
+            exit;
+
+ABSTRACT
+    This module allows easy communication to and from the MX240. Also known
+    as the IMFree. The device is a wireless instant messenger. (USB base,
+    900mhz) libusb and libhid are required for this module to compile.
+
+DESCRIPTION
+    This module has a few functions to interact with the MX240a. Data is
+    read in 16 byte boundries, and is written in 16 byte boundries.
+
+  CONSTRUCTOR
+    "open_dev"
+        This function returns a blessed reference to the MX240 device. The
+        interface for this function may change in the future to accept a
+        vendor and product id. You can use the returned object with the
+        following mehods.
+
+  METHODS
+    "read_dev"
+                Returns undef when nothing has been read, and 16 bytes of data on success.
+
+    "write_dev( $data )"
+                Returns number of bytes written, and 0 on failure.
+
+    "close_dev"
+                Returns true on success and 0 on failure;
+
+  EXPORTS
+    None by default. You can export "open_dev", "MX240A_VENDOR", and
+    "MX240A_PRODUCT".
+
+            use Device::MX240 qw(open_dev);
+
+SEE ALSO
+    <http://libusb.sourceforge.net/>, <http://libhid.alioth.debian.org/>
+
+AUTHOR
+    David Davis <xantus@cpan.org>
+
+CREDITS
+    Dusty, for the C functions to libhid and libusb.
+
+    Please rate this module.
+    "http://cpanratings.perl.org/rate/?distribution=Device-MX240"
+
+COPYRIGHT AND LICENSE
+    Copyright 2005 by David Davis and Teknikill Software
+
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
